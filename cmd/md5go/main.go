@@ -32,9 +32,9 @@ func input() (io.Reader, error) {
 		}
 		defer f.Close()
 		return f, nil
-	case len(os.Args) == 2:
-		return strings.NewReader(os.Args[1]), nil
-	case len(os.Args) == 1:
+	case len(flag.Args()) == 1:
+		return strings.NewReader(flag.Args()[0]), nil
+	case len(flag.Args()) == 0:
 		return os.Stdin, nil
 	default:
 		return nil, errors.New("Provide a file or an argument or use the standard input!")
