@@ -18,6 +18,10 @@ var modeFlag = flag.String("mode", "encode", "encode or decode as mode")
 func main() {
 	flag.Parse()
 
+	if *modeFlag != "encode" && *modeFlag != "decode" {
+		log.Fatal("mode must be encode or decode")
+	}
+
 	input, err := input()
 	if err != nil {
 		log.Fatal(err)
@@ -27,12 +31,10 @@ func main() {
 
 	var output string
 	switch {
-	case *modeFlag == "encode":
-		output = encode(inputAsString)
 	case *modeFlag == "decode":
 		output = decode(inputAsString)
 	default:
-		log.Fatal("mode must be encode or decode")
+		output = encode(inputAsString)
 	}
 
 	fmt.Println(output)
