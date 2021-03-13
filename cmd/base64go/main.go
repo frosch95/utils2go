@@ -23,9 +23,7 @@ func main() {
 	}
 
 	input, err := input()
-	if err != nil {
-		log.Fatal(err)
-	}
+	errorHandling(err)
 
 	inputAsString := streamToString(input)
 
@@ -42,7 +40,8 @@ func main() {
 
 func streamToString(stream io.Reader) string {
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(stream)
+	_, err := buf.ReadFrom(stream)
+	errorHandling(err)
 	return buf.String()
 }
 
@@ -50,17 +49,24 @@ func input() (io.Reader, error) {
 	switch {
 	case *fileFlag != "":
 		f, err := os.Open(*fileFlag)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer f.Close()
+		errorHandling(err)
+		defer func() {
+			err = f.Close()
+		}()
+		errorHandling(err)
 		return f, nil
 	case len(flag.Args()) == 1:
 		return strings.NewReader(flag.Args()[0]), nil
 	case len(flag.Args()) == 0:
 		return os.Stdin, nil
 	default:
-		return nil, errors.New("Provide a file or an argument or use the standard input!")
+		return nil, errors.New("provide a file or an argument or use the standard input")
+	}
+}
+
+func errorHandling(err error) {
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
